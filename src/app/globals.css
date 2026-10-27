@@ -1,0 +1,547 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ tokens */
+
+:root,
+:root[data-theme="amber"] {
+  --room: #0b0603;
+  --room-glow: rgb(255 170 60 / 0.1);
+  --bezel-hi: #2d2219;
+  --bezel: #1a130d;
+  --bezel-lo: #0c0804;
+  --screen: #120a03;
+  --phos: #ffb23e;
+  --phos-bright: #ffd27a;
+  --phos-dim: #8a5a1f;
+  --ghost: #a9c8ff;
+  --danger: #ff6a4d;
+  --paper: #170f09;
+  --rule: #3d2a12;
+  --ink-soft: #d9a24b;
+  --on-phos: #170d02;
+}
+
+:root[data-theme="green"] {
+  --room: #040a06;
+  --room-glow: rgb(80 240 130 / 0.09);
+  --bezel-hi: #1f2b24;
+  --bezel: #131b16;
+  --bezel-lo: #070b08;
+  --screen: #07110a;
+  --phos: #5cf08a;
+  --phos-bright: #b8ffd0;
+  --phos-dim: #2e7a4a;
+  --ghost: #e6b3ff;
+  --danger: #ff6a6a;
+  --paper: #0b130e;
+  --rule: #1f3a29;
+  --ink-soft: #7fe0a1;
+  --on-phos: #03130a;
+}
+
+:root {
+  --font-ui: "IM Fell English", Georgia, "Times New Roman", serif;
+  --font-term: "VT323", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse 65% 55% at 32% 48%, var(--room-glow), transparent 72%),
+    var(--room);
+  color: var(--phos);
+  font-family: var(--font-ui);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--phos);
+  color: var(--on-phos);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ghost);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------ title: the echo */
+
+.echo-title {
+  font-family: var(--font-ui);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--phos-bright);
+  text-shadow:
+    0.05em 0 0 color-mix(in srgb, var(--phos) 50%, transparent),
+    0.11em 0 0 color-mix(in srgb, var(--phos) 28%, transparent),
+    0.18em 0 0 color-mix(in srgb, var(--phos) 13%, transparent),
+    0 0 18px color-mix(in srgb, var(--phos) 35%, transparent);
+}
+
+.lede {
+  max-width: 46ch;
+  color: color-mix(in srgb, var(--phos) 78%, var(--room));
+}
+
+/* ------------------------------------------------------------------ CRT cabinet */
+
+.cabinet {
+  position: relative;
+  padding: clamp(10px, 1.6vw, 20px);
+  border-radius: 28px;
+  background:
+    linear-gradient(155deg, var(--bezel-hi), var(--bezel) 38%, var(--bezel-lo));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    inset 0 -2px 6px rgb(0 0 0 / 0.6),
+    0 30px 80px rgb(0 0 0 / 0.65),
+    0 0 90px var(--room-glow);
+}
+
+.crt {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: clamp(420px, 66dvh, 720px);
+  border-radius: 22px / 26px;
+  background: var(--screen);
+  box-shadow:
+    inset 0 0 70px rgb(0 0 0 / 0.75),
+    inset 0 0 8px color-mix(in srgb, var(--phos) 35%, transparent),
+    0 0 0 2px rgb(0 0 0 / 0.8);
+  cursor: text;
+}
+
+.crt-pad {
+  position: absolute;
+  inset: 0;
+  padding: clamp(14px, 2.2vw, 26px) clamp(16px, 2.6vw, 32px);
+  animation: crt-flicker 6s steps(1, end) infinite;
+}
+
+/* scanlines */
+.crt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.22) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* vignette + glass sheen */
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 100% at 50% 40%, transparent 52%, rgb(0 0 0 / 0.55) 100%),
+    linear-gradient(168deg, rgb(255 255 255 / 0.05), transparent 28%);
+}
+
+.crt-roll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 16%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--phos) 7%, transparent),
+    transparent
+  );
+  animation: crt-roll 9s linear infinite;
+}
+
+@keyframes crt-roll {
+  from { top: -20%; }
+  to { top: 110%; }
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  47% { opacity: 1; }
+  48% { opacity: 0.965; }
+  49% { opacity: 1; }
+  83% { opacity: 0.985; }
+  84% { opacity: 1; }
+}
+
+/* phosphor glow on every glyph xterm paints */
+.crt .xterm,
+.crt .xterm-viewport {
+  background: transparent !important;
+}
+
+.crt .xterm-rows {
+  font-variant-ligatures: none;
+  text-shadow: 0 0 5px color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.crt .xterm-rows > div {
+  text-shadow: inherit;
+}
+
+.crt .xterm-rows span {
+  text-shadow: 0 0 5px color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.crt .xterm-viewport {
+  scrollbar-width: thin;
+  scrollbar-color: var(--phos-dim) transparent;
+}
+
+.crt .xterm .scrollbar.vertical {
+  width: 6px !important;
+}
+
+.crt .xterm .scrollbar .slider {
+  width: 6px !important;
+  left: 0 !important;
+  background: color-mix(in srgb, var(--phos) 28%, transparent) !important;
+  border-radius: 4px;
+}
+
+/* the ghost is speaking: the screen bleeds */
+.crt[data-whisper="true"] .xterm-rows {
+  animation: bleed 0.34s steps(2, end) infinite;
+}
+
+@keyframes bleed {
+  0% {
+    text-shadow:
+      -1.5px 0 rgb(255 40 90 / 0.5),
+      1.5px 0 rgb(70 150 255 / 0.5),
+      0 0 7px color-mix(in srgb, currentColor 60%, transparent);
+    transform: translateX(0);
+  }
+  50% {
+    text-shadow:
+      1.5px 0 rgb(255 40 90 / 0.5),
+      -1.5px 0 rgb(70 150 255 / 0.5),
+      0 0 7px color-mix(in srgb, currentColor 60%, transparent);
+    transform: translateX(0.6px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* high presence: the picture tears now and then */
+.crt[data-presence="high"] .crt-pad {
+  animation:
+    crt-flicker 6s steps(1, end) infinite,
+    crt-tear 7s steps(1, end) infinite;
+}
+
+.crt[data-presence="possessed"] .crt-pad {
+  animation:
+    crt-flicker 2.6s steps(1, end) infinite,
+    crt-tear 3.4s steps(1, end) infinite;
+}
+
+@keyframes crt-tear {
+  0%, 92%, 100% { transform: none; filter: none; }
+  93% { transform: translateX(-5px) skewX(-1.4deg); filter: hue-rotate(-18deg); }
+  95% { transform: translateX(4px) skewX(0.9deg); }
+  97% { transform: translateX(-1px); filter: saturate(1.6); }
+}
+
+/* ------------------------------------------------------------------ presence lamps */
+
+.lamps {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.lamp {
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--room) 70%, var(--rule));
+  transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.lamp[data-lit="true"] {
+  border-color: var(--ghost);
+  background: var(--ghost);
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--ghost) 70%, transparent);
+}
+
+.lamp[data-lit="true"][data-danger="true"] {
+  border-color: var(--danger);
+  background: var(--danger);
+  box-shadow: 0 0 12px 2px color-mix(in srgb, var(--danger) 70%, transparent);
+}
+
+/* ------------------------------------------------------------------ séance board */
+
+.board {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 1.5rem 1.5rem 1.25rem;
+  outline: 1px solid var(--rule);
+  outline-offset: -7px;
+  border-radius: 4px;
+}
+
+.board h2 {
+  margin: 0 0 0.35rem;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.35rem;
+  color: var(--phos-bright);
+}
+
+.board > .board-section:first-of-type {
+  margin-top: 1.25rem;
+}
+
+.board-section + .board-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.muted {
+  color: color-mix(in srgb, var(--phos) 68%, var(--paper));
+}
+
+.mono {
+  font-family: var(--font-term);
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+
+.choice {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  gap: 0 0.75rem;
+  align-items: start;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.choice input {
+  appearance: none;
+  margin: 0.38rem 0 0;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--phos-dim);
+  background: transparent;
+  cursor: pointer;
+}
+
+.choice input:checked {
+  border-color: var(--phos-bright);
+  background: var(--phos-bright);
+  box-shadow: 0 0 9px 1px color-mix(in srgb, var(--phos) 70%, transparent);
+}
+
+.choice input:focus-visible {
+  outline: 2px solid var(--ghost);
+  outline-offset: 3px;
+}
+
+.choice strong {
+  font-weight: 400;
+  color: var(--phos-bright);
+}
+
+.field {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0.1rem;
+  background: transparent;
+  color: var(--phos-bright);
+  border: 0;
+  border-bottom: 1px solid var(--phos-dim);
+  border-radius: 0;
+  font-family: var(--font-term);
+  font-size: 1.2rem;
+}
+
+.field:focus-visible {
+  outline: none;
+  border-bottom-color: var(--ghost);
+  box-shadow: 0 1px 0 0 var(--ghost);
+}
+
+select.field option {
+  background: var(--paper);
+  color: var(--phos-bright);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--phos);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--phos-bright);
+  font-family: var(--font-ui);
+  font-style: italic;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--phos) 16%, transparent);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-solid {
+  background: var(--phos);
+  color: var(--on-phos);
+  border-color: var(--phos);
+  font-style: normal;
+}
+
+.btn-solid:hover:not(:disabled) {
+  background: var(--phos-bright);
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--phos-dim);
+  border-radius: 2px;
+}
+
+.segmented label {
+  display: block;
+  position: relative;
+  text-align: center;
+  padding: 0.45rem 0.25rem;
+  cursor: pointer;
+  color: var(--phos);
+}
+
+.segmented label + label {
+  border-left: 1px solid var(--phos-dim);
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.segmented label:has(input:checked) {
+  background: var(--phos);
+  color: var(--on-phos);
+}
+
+.segmented label:has(input:focus-visible) {
+  outline: 2px solid var(--ghost);
+  outline-offset: 2px;
+}
+
+.progress {
+  height: 6px;
+  background: color-mix(in srgb, var(--room) 60%, var(--rule));
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress > i {
+  display: block;
+  height: 100%;
+  background: var(--phos);
+  box-shadow: 0 0 10px var(--phos);
+  transition: width 0.3s ease;
+}
+
+.chip {
+  padding: 0.2rem 0.65rem 0.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--phos);
+  font-family: var(--font-term);
+  font-size: 1.15rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--phos);
+  background: color-mix(in srgb, var(--phos) 10%, transparent);
+}
+
+.chip:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
+.notice {
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 2px solid var(--danger);
+  color: color-mix(in srgb, var(--danger) 55%, var(--phos-bright));
+  font-size: 0.98rem;
+}
+
+.swatch {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--phos-dim);
+  cursor: pointer;
+  padding: 0;
+}
+
+.swatch[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--room), 0 0 0 3px var(--phos-bright);
+}
+
+/* ------------------------------------------------------------------ reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-pad,
+  .crt-roll,
+  .crt[data-whisper="true"] .xterm-rows,
+  .crt[data-presence="high"] .crt-pad,
+  .crt[data-presence="possessed"] .crt-pad {
+    animation: none !important;
+  }
+  .lamp,
+  .progress > i,
+  .btn,
+  .chip {
+    transition: none;
+  }
+}
